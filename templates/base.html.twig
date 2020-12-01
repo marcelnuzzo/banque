@@ -2,11 +2,27 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
+        <meta name="viewport" content="width=device-width, user-scalable=no">
+        <title>{% block title %}Bienvenue{% endblock %}</title>
+        {#<link rel="stylesheet"  href="{{ asset('css/main.css') }}">#}
+        <link rel="stylesheet"  href="{{ asset('css/bootstrap.min.css') }}"> 
+        <link rel="stylesheet" href="/css/main.css">
         {% block stylesheets %}{% endblock %}
+
     </head>
     <body>
+        {% include 'partials/header.html.twig' %}
+
         {% block body %}{% endblock %}
+
+        {% include 'partials/footer.html.twig' %}
+
+        {#<script src="/js/jquery.min.js"></script>#}
+        {#<script src="/js/popper.min.js"></script>#}
+        {#<script src="/js/bootstrap.min.js"></script>#}
+        <script src="{{ asset('js/jquery.min.js') }}"></script>
+        <script src="{{ asset('js/popper.min.js') }}"></script>
+        <script src="{{ asset('js/bootstrap.min.js') }}"></script>
         {% block javascripts %}{% endblock %}
     </body>
 </html>

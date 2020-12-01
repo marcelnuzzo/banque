@@ -5,10 +5,16 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ORM\Table(name="`user`")
+ *  @UniqueEntity(
+ *  fields={"email"},
+ *  message="Un autre utilisateur s'est déjà inscrit avec cette adresse email, merci de la modifier"
+ * )
  */
 class User implements UserInterface
 {
@@ -21,6 +27,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     * @Assert\Email(message="Veuillez renseigner un email valide")
      */
     private $email;
 
@@ -35,13 +42,20 @@ class User implements UserInterface
      */
     private $password;
 
+     /**
+     *  @Assert\EqualTo(propertyPath="password", message="Vous n'avez pas correctement confirmé votre mot de passe") 
+     */
+    public $passwordConfirm;
+
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $firstname;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $lastname;
 
@@ -49,6 +63,10 @@ class User implements UserInterface
      * @ORM\Column(type="datetime")
      */
     private $birthdayAt;
+
+    public function getFullName() {
+        return "{$this->firstName} {$this->lastName}";
+    }
 
     public function getId(): ?int
     {

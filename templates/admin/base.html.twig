@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no">
+		<title>BanqueBnb -
+			{% block title %}Bienvenue
+			{% endblock %}
+		</title>
+		<link
+		rel="stylesheet" href="/css/bootstrap.min.css">
+		<!--<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">-->
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+		<link
+		rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+		<!--<link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">-->
+		<link rel="stylesheet" href="{{ asset('css/main.css') }}"> {% block stylesheets %}{% endblock %}
+		</head>
+		<body>
+			{% include 'admin/partials/header.html.twig' %}
+
+			{% block body %}{% endblock %}
+
+			{% include 'admin/partials/footer.html.twig' %}
+
+			<script src="/js/jquery.min.js"></script>
+			<script src="/js/popper.min.js"></script>
+			<script src="/js/bootstrap.min.js"></script>
+			{% block javascripts %}{% endblock %}
+		</body>
+	</html>

@@ -23,6 +23,7 @@ class AppFixtures extends Fixture
             ->setLastname("Nuzzo")
             ->setEmail("nuzzo.marcel@aliceadsl.fr")
             ->setBirthdayAt(new \DateTime('1968-04-13'))
+            ->setRoles(['ROLE_ADMIN'])
             ->setPassword($this->passwordEncoder->encodePassword(
                 $user,
                 '1234'
