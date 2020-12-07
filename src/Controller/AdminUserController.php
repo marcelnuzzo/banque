@@ -5,31 +5,30 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\UserType;
 use App\Repository\UserRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-/**
- * @Route("/user")
- */
-class UserController extends AbstractController
+class AdminUserController extends AbstractController
 {
     /**
-     * @Route("/", name="user_index", methods={"GET"})
+     * @Route("/admin/user", name="admin_user", methods={"GET"})
      */
     public function index(UserRepository $userRepository): Response
     {
-        return $this->render('user/index.html.twig', [
+        return $this->render('admin/user/index.html.twig', [
             'users' => $userRepository->findAll(),
         ]);
     }
 
-    /**
-     * @Route("/new", name="user_new", methods={"GET","POST"})
+     /**
+     * @Route("/admin/user/new", name="admin_user_new")
+     *
+     * @return Response
      */
-    public function new(Request $request): Response
-    {
+    public function new(Request $request) {
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
@@ -43,17 +42,17 @@ class UserController extends AbstractController
                 "Le client a été créer"
             );
 
-            return $this->redirectToRoute('user_index');
+            return $this->redirectToRoute('admin_user_index');
         }
 
-        return $this->render('user/new.html.twig', [
+        return $this->render('admin/user/new.html.twig', [
             'user' => $user,
             'form' => $form->createView(),
         ]);
     }
 
     /**
-     * @Route("/{id}", name="user_show", methods={"GET"})
+     * @Route("/admin/user/{id}", name="admin_user_show", methods={"GET"})
      */
     public function show(User $user): Response
     {
@@ -63,40 +62,43 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/edit", name="user_edit", methods={"GET","POST"})
+     * @Route("/admin/user/{id}/edit", name="admin_user_edit")
+     * 
+     * @return Response
      */
-    public function edit(Request $request, User $user): Response
-    {
+    public function edit(User $user, Request $request, EntityManagerInterface $manager) {
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
+        if($form->isSubmitted() && $form->isValid()) {
+            $manager->persist($user);
+            $manager->flush();
             $this->addFlash(
                 'success',
                 "L'utilisateur n°{$user->getId()} a bien été modifiée"
             );
-
-            return $this->redirectToRoute('user_index');
+            return $this->redirectToRoute('admin_user_index');
         }
-
-        return $this->render('user/edit.html.twig', [
-            'user' => $user,
+        return $this->render('admin/user/edit.html.twig', [
             'form' => $form->createView(),
+            'user' => $user
         ]);
     }
 
-    /**
-     * @Route("/{id}", name="user_delete", methods={"DELETE"})
+     /**
+     * @Route("/admin/user/{id}/delete", name="admin_user_delete")
+     * 
+     * @return Response
      */
-    public function delete(Request $request, User $user): Response
-    {
+    public function delete(User $user, Request $request) {
         if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($user);
             $entityManager->flush();
         }
-
-        return $this->redirectToRoute('user_index');
+        $this->addFlash(
+            'success',
+            "L'utilisateur a bien été supprimée"
+        );
+        return $this->redirectToRoute("admin_user_index");
     }
 }

@@ -8,7 +8,7 @@
    
     <ul class="navbar-nav mr-auto">
       <li class="nav-item active">
-        <a class="nav-link" href="#">Home
+        <a class="nav-link" href="{{ path("homepage") }}">Home
           <span class="sr-only">(current)</span>
         </a>
       </li>
@@ -32,9 +32,9 @@
             </li>
         {% else %}
         <li class="nav-item dropdown ddmenu">
-            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Dropdown</a>
+            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Profil</a>
             <div class="dropdown-menu" aria-labelledby="accountDopdownLink">
-            <a class="dropdown-item" href="{{ path('account_index') }}">Mon compte</a>
+            <a class="dropdown-item" href="#">Mon compte</a>
             <a class="dropdown-item" href="{{ path('account_profile') }}">Modifier mon profile</a>
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="{{ path('account_logout') }}">Déconnexion</a>
@@ -45,3 +45,12 @@
     
   </div>
 </nav>
+{% for label, messages in app.flashes %}
+    <div class="container">
+        <div class="alert alert-{{ label }}">
+            {% for message in messages %}
+                <p>{{ message | raw }}</p>
+            {% endfor %}
+        </div>
+    </div>
+{% endfor %}

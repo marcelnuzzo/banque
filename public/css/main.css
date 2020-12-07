@@ -16,6 +16,7 @@
 
 div.container {
   margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 div.carousel-caption {
@@ -30,13 +31,18 @@ div.carousel-caption {
   color: white;
 }
 
-h1 {
+h1{
   text-align: center;
+  box-shadow: 12px 12px 2px 1px rgba(0, 0, 255, .2);
+  border-width: 3px;
+  border-style: solid;
+  border-color: black;
+  color: blue;
 }
 
 a.btn {
-  margin: 0 auto;
-  display: block;
+  //margin: 0 auto;
+  //display: block;
 }
 
 .ddmenu {
@@ -48,4 +54,17 @@ footer {
   bottom: 0;
   left: 0;
   right: 0;
+}
+
+.jumbotron {
+  text-align: center;
+  background-color: azure;
+}
+
+.souligne {
+  text-decoration: underline;
+}
+
+.margeHaut {
+  margin-top: 25px;
 }

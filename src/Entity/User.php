@@ -28,6 +28,7 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="string", length=180, unique=true)
      * @Assert\Email(message="Veuillez renseigner un email valide")
+     * @Assert\NotBlank()
      */
     private $email;
 
@@ -61,11 +62,12 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="datetime")
+     * @Assert\NotBlank()
      */
     private $birthdayAt;
 
     public function getFullName() {
-        return "{$this->firstName} {$this->lastName}";
+        return "{$this->firstname} {$this->lastname}";
     }
 
     public function getId(): ?int

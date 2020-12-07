@@ -2,16 +2,60 @@
 {% block title %}
     Bienvenu dans la banque de demain
 {% endblock %}
+{% block style %}
+    <style>
+    .mySlides {display:none;}
+    </style>
+{% endblock %}
 
 {% block body %}
 <div class="container">
     <div class="jumbotron mt-3">
-        <h1 class="display-3">Bienvenu dans la banque de demain</h1>
-        <p class="lead">Nous mettons en relation nos experts pour votre confort</p>
+        {% if(app.user) %}
+            <h1 class="display-3">Bienvenu dans votre banque</h1>
+            <h2 class="margeHaut"><strong>{{ user.fullname }}</strong></h2>
+        {% else %}
+            <h1 class="display-3">Bienvenu dans la banque de demain</h1>
+        {% endif %}
+        <h3 clasee="margeHaut" >Nous mettons en relation nos experts à votre disposition</h3>
         <hr class="my-4">
-        <p class="lead">
+        <p>
             <a class="btn btn-primary btn-lg" href="#" role="button">Voir nos produits</a>
         </p>
     </div>
+
+    <div class="row">
+        <div class="col-6">
+            <p>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore voluptas corporis eveniet? Corrupti ipsam ad quis delectus quaerat vitae itaque saepe harum? Nulla laboriosam, optio similique eius temporibus odit dicta.
+            </p>
+            <p>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Aspernatur ipsum commodi velit, quam inventore alias. Perferendis nisi fuga neque. Voluptatibus assumenda laudantium dignissimos omnis cupiditate explicabo in possimus optio consequatur?
+            </p>
+        </div>
+        <div class="col">
+            <div class="w3-content w3-section" style="max-width:500px">
+            <img class="mySlides" src="allImages/chat1.webp" style="width:100%" height="auto">
+            <img class="mySlides" src="allImages/chat2.jfif" style="width:100%" height="auto">
+            <img class="mySlides" src="allImages/chat3.jpg" style="width:100%" height="auto">
+            </div>
+        </div>
+    </div>
 </div>
+<script>
+var myIndex = 0;
+carousel();
+
+function carousel() {
+  var i;
+  var x = document.getElementsByClassName("mySlides");
+  for (i = 0; i < x.length; i++) {
+    x[i].style.display = "none";  
+  }
+  myIndex++;
+  if (myIndex > x.length) {myIndex = 1}    
+  x[myIndex-1].style.display = "block";  
+  setTimeout(carousel, 2000); // Change image every 2 seconds
+}
+</script>
 {% endblock %}

@@ -1,23 +1,45 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Page de {{ user.fullName }}{% endblock %}
+{% block title %}User index{% endblock %}
 
 {% block body %}
+    <h1>User index</h1>
 
-    <div class="container">
-        <div class="row align-items-center mb-5">
-            <div class="col-3 text-center">
-            </div>
-            <div class="col-9">
-                <h1>{{ user.fullName }}</h1>
-                {% if user is same as(app.user) %}
-                    <div class="mt-3">
-                        <a href="{{ path('account_profile') }}" class="btn btn-primary mr-2 mb-2">Modifier mes informations</a>
-                        <a href="{{ path('account_password') }}" class="btn btn-primary mb-2">Modifier mon mot de passe</a>
-                    </div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Email</th>
+                <th>Roles</th>
+                <th>Password</th>
+                <th>Firstname</th>
+                <th>Lastname</th>
+                <th>BirthdayAt</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.roles ? user.roles|json_encode : '' }}</td>
+                <td>{{ user.password }}</td>
+                <td>{{ user.firstname }}</td>
+                <td>{{ user.lastname }}</td>
+                <td>{{ user.birthdayAt ? user.birthdayAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('user_show', {'id': user.id}) }}">show</a>
+                    <a href="{{ path('user_edit', {'id': user.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="8">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 
+    <a href="{{ path('user_new') }}">Create new</a>
 {% endblock %}
