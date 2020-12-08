@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -65,6 +67,16 @@ class User implements UserInterface
      * @Assert\NotBlank()
      */
     private $birthdayAt;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Bankaccount::class, mappedBy="users", orphanRemoval=true)
+     */
+    private $bankaccounts;
+
+    public function __construct()
+    {
+        $this->bankaccounts = new ArrayCollection();
+    }
 
     public function getFullName() {
         return "{$this->firstname} {$this->lastname}";
@@ -180,6 +192,36 @@ class User implements UserInterface
     public function setBirthdayAt(\DateTimeInterface $birthdayAt): self
     {
         $this->birthdayAt = $birthdayAt;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Bankaccount[]
+     */
+    public function getBankaccounts(): Collection
+    {
+        return $this->bankaccounts;
+    }
+
+    public function addBankaccount(Bankaccount $bankaccount): self
+    {
+        if (!$this->bankaccounts->contains($bankaccount)) {
+            $this->bankaccounts[] = $bankaccount;
+            $bankaccount->setUsers($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBankaccount(Bankaccount $bankaccount): self
+    {
+        if ($this->bankaccounts->removeElement($bankaccount)) {
+            // set the owning side to null (unless already changed)
+            if ($bankaccount->getUsers() === $this) {
+                $bankaccount->setUsers(null);
+            }
+        }
 
         return $this;
     }
