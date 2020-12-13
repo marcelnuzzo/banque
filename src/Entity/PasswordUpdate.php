@@ -10,7 +10,7 @@ class PasswordUpdate
 
     /**
      * 
-     * @Assert\Length(min=6, minMessage="Votre mot de passe doit faire au moins 6 caractères !")
+     * @Assert\Length(min=4, minMessage="Votre mot de passe doit faire au moins 6 caractères !")
      */
     private $newPassword;
 

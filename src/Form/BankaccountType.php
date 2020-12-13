@@ -18,7 +18,7 @@ class BankaccountType extends AbstractType
             ->add('amount')
             ->add('users', EntityType::class, [
                 'class' => User::class,
-                'choice_label' => 'username',
+                'choice_label' => 'firstname',
             
                 // used to render a select box, check boxes or radios
                 // 'multiple' => true,

@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}création bénéficiaire{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1>Créer un nouveau bénéficiare</h1>
+    <br>
+    {{ include('user/_form.html.twig') }}
+    <br>
+    <a class="btn btn-warning" href="{{ path('user_index') }}">Revenir sur votre page</a>
+</div>
+{% endblock %}

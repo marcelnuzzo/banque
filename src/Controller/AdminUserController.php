@@ -4,12 +4,17 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\UserType;
+use App\Entity\Bankaccount;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\BankaccountRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use App\Service\NewUserAccount;
+
 
 class AdminUserController extends AbstractController
 {
@@ -28,23 +33,37 @@ class AdminUserController extends AbstractController
      *
      * @return Response
      */
-    public function new(Request $request) {
+    public function new(Request $request, BankaccountRepository $repo, UserPasswordEncoderInterface $encoder, NewUserAccount $newUserAccount) {
+        $withoutPw = true;
         $user = new User();
-        $form = $this->createForm(UserType::class, $user);
+        $form = $this->createForm(UserType::class, $user, [
+            "withoutPw" => $withoutPw,
+        ]);
         $form->handleRequest($request);
-
+        
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
+            $hash = $encoder->encodePassword($user, $user->getPassword());
+            $user->setPassword($hash);
             $entityManager->persist($user);
             $entityManager->flush();
+            // création d'un compte avec un iban pour ce nouveau client
+            $account = $repo->findAll();
+            // App\Service\NewUserAccount, création iban unique
+            $newIban = $newUserAccount->getNewUserAccount($account);
+            $account = new Bankaccount();
+            $account->setAmount(0)
+                    ->setIban($newIban)
+                    ->setUsers($user)
+                    ;
+                    $entityManager->persist($account);
+                    $entityManager->flush();  
             $this->addFlash(
                 'success',
-                "Le client a été créer"
+                "Le client a été créer ainsi que son compte banquaire"
             );
-
-            return $this->redirectToRoute('admin_user_index');
+            return $this->redirectToRoute('admin_user');      
         }
-
         return $this->render('admin/user/new.html.twig', [
             'user' => $user,
             'form' => $form->createView(),
@@ -56,7 +75,7 @@ class AdminUserController extends AbstractController
      */
     public function show(User $user): Response
     {
-        return $this->render('user/show.html.twig', [
+        return $this->render('admin/user/show.html.twig', [
             'user' => $user,
         ]);
     }
@@ -67,16 +86,19 @@ class AdminUserController extends AbstractController
      * @return Response
      */
     public function edit(User $user, Request $request, EntityManagerInterface $manager) {
-        $form = $this->createForm(UserType::class, $user);
+        $withoutPw = false;
+        $form = $this->createForm(UserType::class, $user, [
+            "withoutPw" => $withoutPw,
+        ]);
         $form->handleRequest($request);
         if($form->isSubmitted() && $form->isValid()) {
             $manager->persist($user);
             $manager->flush();
             $this->addFlash(
                 'success',
-                "L'utilisateur n°{$user->getId()} a bien été modifiée"
+                "Les données client {$user->getFullname() } ont bien été modifié"
             );
-            return $this->redirectToRoute('admin_user_index');
+            return $this->redirectToRoute('admin_user');
         }
         return $this->render('admin/user/edit.html.twig', [
             'form' => $form->createView(),
@@ -99,6 +121,6 @@ class AdminUserController extends AbstractController
             'success',
             "L'utilisateur a bien été supprimée"
         );
-        return $this->redirectToRoute("admin_user_index");
+        return $this->redirectToRoute("admin_user");
     }
 }

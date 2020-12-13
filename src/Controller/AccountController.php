@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Form\AccountType;
 use App\Entity\PasswordUpdate;
 use App\Form\RegistrationType;
+use App\Form\PasswordUpdateType;
 use Symfony\Component\Form\FormError;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -96,7 +97,7 @@ class AccountController extends AbstractController
                 'success',
                 "Les données du profil ont été enregistrées avec succès !"
             );
-            return $this->redirectToRoute('homepage');
+            return $this->redirectToRoute('user_index');
         }
 
         return $this->render('account/profile.html.twig', [
@@ -120,14 +121,14 @@ class AccountController extends AbstractController
 
         if($form->isSubmitted() && $form->isValid()) {
             // 1. Vérifier que le oldPassword du formulaire soit le même que le password du user
-            if(!password_verify($passwordUpdate->getOldPassword(), $user->getHash())) {
+            if(!password_verify($passwordUpdate->getOldPassword(), $user->getPassword())) {
                 // Gérer l'erreur
                 $form->get('oldPassword')->addError(new FormError("Le mot de passe que vous avez tapé n'est pas votre mot de passe actuel"));
             } else {
                 $newPassword = $passwordUpdate->getNewPassword();
                 $hash = $encoder->encodePassword($user, $newPassword);
 
-                $user->setHash($hash);
+                $user->setPassword($hash);
                 $manager->persist($user);
                 $manager->flush();
 
@@ -136,7 +137,7 @@ class AccountController extends AbstractController
                     "Votre mot de passe a bien été modifié !"
                 );
 
-                return $this->redirectToRoute('homepage');
+                return $this->redirectToRoute('user_index');
             }            
             
         }

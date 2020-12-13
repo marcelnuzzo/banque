@@ -40,11 +40,6 @@ h1{
   color: blue;
 }
 
-a.btn {
-  //margin: 0 auto;
-  //display: block;
-}
-
 .ddmenu {
   margin-right: 100px;
 }
@@ -67,4 +62,12 @@ footer {
 
 .margeHaut {
   margin-top: 25px;
+}
+
+.centrer {
+  text-align: center;
+}
+
+.color1 {
+  background-color: yellow;
 }

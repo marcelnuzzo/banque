@@ -1,0 +1,13 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Editer compte en banque{% endblock %}
+
+{% block body %}
+    <h1>Editer compte en banque</h1>
+
+    {{ include('admin/bankaccount/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('admin_bankaccount') }}">Retour à la liste</a>
+
+    {{ include('admin/bankaccount/_delete_form.html.twig') }}
+{% endblock %}

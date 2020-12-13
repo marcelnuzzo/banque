@@ -7,7 +7,7 @@
 
     {{ include('admin/user/_form.html.twig', {'button_label': 'Modifier'}) }}
 
-    <a href="{{ path('admin_user_index') }}">Retour à la liste</a>
+    <a class="btn btn-info" href="{{ path('admin_user') }}">Retour à la liste</a>
 
     {{ include('admin/user/_delete_form.html.twig') }}
 {% endblock %}

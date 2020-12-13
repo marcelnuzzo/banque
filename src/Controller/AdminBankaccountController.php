@@ -11,22 +11,22 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/bankaccount")
+ * @Route("/admin/bankaccount")
  */
-class BankaccountController extends AbstractController
+class AdminBankaccountController extends AbstractController
 {
     /**
-     * @Route("/", name="bankaccount_index", methods={"GET"})
+     * @Route("/", name="admin_bankaccount", methods={"GET"})
      */
     public function index(BankaccountRepository $bankaccountRepository): Response
     {
-        return $this->render('bankaccount/index.html.twig', [
+        return $this->render('admin/bankaccount/index.html.twig', [
             'bankaccounts' => $bankaccountRepository->findAll(),
         ]);
     }
 
     /**
-     * @Route("/new", name="bankaccount_new", methods={"GET","POST"})
+     * @Route("/new", name="admin_bankaccount_new", methods={"GET","POST"})
      */
     public function new(Request $request): Response
     {
@@ -39,27 +39,27 @@ class BankaccountController extends AbstractController
             $entityManager->persist($bankaccount);
             $entityManager->flush();
 
-            return $this->redirectToRoute('bankaccount_index');
+            return $this->redirectToRoute('admin_bankaccount');
         }
 
-        return $this->render('bankaccount/new.html.twig', [
+        return $this->render('admin/bankaccount/new.html.twig', [
             'bankaccount' => $bankaccount,
             'form' => $form->createView(),
         ]);
     }
 
     /**
-     * @Route("/{id}", name="bankaccount_show", methods={"GET"})
+     * @Route("/{id}", name="admin_bankaccount_show", methods={"GET"})
      */
     public function show(Bankaccount $bankaccount): Response
     {
-        return $this->render('bankaccount/show.html.twig', [
+        return $this->render('admin/bankaccount/show.html.twig', [
             'bankaccount' => $bankaccount,
         ]);
     }
 
     /**
-     * @Route("/{id}/edit", name="bankaccount_edit", methods={"GET","POST"})
+     * @Route("/{id}/edit", name="admin_bankaccount_edit", methods={"GET","POST"})
      */
     public function edit(Request $request, Bankaccount $bankaccount): Response
     {
@@ -69,17 +69,17 @@ class BankaccountController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->getDoctrine()->getManager()->flush();
 
-            return $this->redirectToRoute('bankaccount_index');
+            return $this->redirectToRoute('admin_bankaccount');
         }
 
-        return $this->render('bankaccount/edit.html.twig', [
+        return $this->render('admin/bankaccount/edit.html.twig', [
             'bankaccount' => $bankaccount,
             'form' => $form->createView(),
         ]);
     }
 
     /**
-     * @Route("/{id}", name="bankaccount_delete", methods={"DELETE"})
+     * @Route("/{id}", name="admin_bankaccount_delete", methods={"DELETE"})
      */
     public function delete(Request $request, Bankaccount $bankaccount): Response
     {
@@ -89,6 +89,6 @@ class BankaccountController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('bankaccount_index');
+        return $this->redirectToRoute('admin_bankaccount_index');
     }
 }
