@@ -5,6 +5,9 @@ namespace App\Repository;
 use App\Entity\Bankaccount;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Validator\Constraints\IsNull;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\NotNull;
 
 /**
  * @method Bankaccount|null find($id, $lockMode = null, $lockVersion = null)
@@ -17,6 +20,35 @@ class BankaccountRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Bankaccount::class);
+    }
+
+    // /**
+    //  * @return Bankaccount[] Returns an array of Bankaccount objects
+    //  */
+    public function findAccountUser($idUser)
+    {
+        return $this->createQueryBuilder('b')
+            ->andWhere('b.users = :val')
+            ->andWhere('b.beneficiary IS NULL')
+            ->setParameter('val', $idUser)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+     // /**
+    //  * @return Bankaccount[] Returns an array of Bankaccount objects
+    //  */
+    public function findBenficiaryUser($idUser)
+    {
+        return $this->createQueryBuilder('b')
+            ->andWhere('b.users = :val')
+            ->andWhere('b.beneficiary IS NOT NULL')
+            ->setParameter('val', $idUser)
+            //->setParameter('val2', null )
+            ->getQuery()
+            ->getResult()
+        ;
     }
 
     // /**

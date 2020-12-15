@@ -33,6 +33,7 @@
                 <th>Nom</th>
                 <th>Date de naissance</th>
                 <th>Comptes</th>
+                <th>Bénéficiaire</th>
                 <th class="centrer">Actions</th>
             </tr>
         </thead>
@@ -46,21 +47,20 @@
                 <td>{{ user.lastname }}</td>
                 <td>{{ user.birthdayAt ? user.birthdayAt|date('d-m-Y') : '' }}</td>
                 <td>
-                    <div>
-                        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapse" aria-expanded="false" aria-controls="collapse" onclick="myFunction()" >
-                            Ibans
-                        </button>
-                        <div class="collapse" id="collapse" >
-                            <div class="card card-body btn btn-warning">
-                                    <p><strong>Ibans</strong></p>
-                                    <ul>
-                                    {% for account in user.bankaccounts %}
-                                        <li>{{ account.iban }}</li>
-                                    {% endfor %}
-                                    </ul>
-                            </div>
-                        </div>
-                    </div>
+                    <ul>
+                    {% for account in user.bankaccounts %}
+                        <li>{{ account.iban }}</li>
+                    {% endfor %}
+                    </ul>
+                </td>
+                <td>
+                    <ul>
+                    {% for account in user.bankaccounts %}
+                        {% if account.beneficiary %}
+                        <li>{{ account.beneficiary }}</li>
+                        {% endif %}
+                    {% endfor %}
+                    </ul>   
                 </td>
                 <td>
                     <a class="btn btn-warning" href="{{ path('admin_user_show', {'id': user.id}) }}">Voir</a>
@@ -76,16 +76,5 @@
         {% endfor %}
         </tbody>
     </table>
-<script>
-/*
-        function myFunction() {
-            var x = document.getElementById("myDiv");
-            if (x.style.display === "none") {
-                x.style.display = "block";
-            } else {
-                x.style.display = "none";
-            }
-        }
-        */
-</script>
+
 {% endblock %}

@@ -24,16 +24,31 @@ class UserController extends AbstractController
     /**
      * @Route("/", name="user_index", methods={"GET"})
      */
-    public function index(): Response
+    public function index(BankaccountRepository $BankRepo, UserRepository $userRepo): Response
     {
         $user = $this->getUser();
+        $idUser = $this->getUser()->getId();
+        // recherche des comptes utilisateurs n'ayant pas de bénéficiaire
+        $userAccount = $BankRepo->findAccountUser($idUser);
+        // recherche des bénéficiaires rattachés à ce client
+        $beneficiaries = $BankRepo->findBenficiaryUser($idUser);
+        if($beneficiaries) {
+            $idBeneficiary = $beneficiaries[0]->getBeneficiary();
+            $benefUser = $userRepo->find($idBeneficiary);
+        } else {
+            $benefUser = null;
+        }
+      
         return $this->render('user/index.html.twig', [
             'user' => $user,
+            'beneficiaries' => $beneficiaries,
+            'userAccount' => $userAccount,
+            'benefUser' => $benefUser,
         ]);
     }
 
     /**
-     * @Route("/user/newBeneficiary", name="user_newBeneficiary", methods={"GET","POST"})
+     * @Route("/newBeneficiary", name="user_newBeneficiary", methods={"GET","POST"})
      */
     public function newBeneficiary(Request $request, BankaccountRepository $repo, UserPasswordEncoderInterface $encoder, NewUserAccount $newUserAccount, \Swift_Mailer $mailer,  EnvoiMail $envoiMail)
     {
@@ -44,26 +59,33 @@ class UserController extends AbstractController
             "withoutPw" => $withoutPw,
         ]);
         $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
+        
+        if ($form->isSubmitted() && $form->isValid()) {       
             $entityManager = $this->getDoctrine()->getManager();
             $hash = $encoder->encodePassword($user, $user->getPassword());
             $user->setPassword($hash);
             $entityManager->persist($user);
             $entityManager->flush();
-             // création d'un compte avec un iban pour ce nouveau client
-             $account = $repo->findAll();
+            // on récupère l'identifiant du nouveau bénéficiaire
+            $idBeneficiary = $user->getId();
+             // trouver tout les iban de la banque
+             $accounts = $repo->findAll();
              // App\Service\NewUserAccount, création iban unique
-             $newIban = $newUserAccount->getNewUserAccount($account);
+             $newIban = $newUserAccount->getNewUserAccount($accounts);
+             // création d'un compte avec un iban pour ce nouveau client
              $account = new Bankaccount();
-             $account->setAmount(0)
+             $account->setAmount(10)
                      ->setIban($newIban)
-                     ->setUsers($user)
+                     ->setUsers($userOrigin)
+                     ->setBeneficiary($idBeneficiary)
+                     ->setCreatedAt(new \DateTime('now', new \DateTimeZone('Europe/Paris')))
                      ;
                      $entityManager->persist($account);
                      $entityManager->flush();  
+                     $compte = $account->getIban();
+                     $montant = $account->getAmount();
             // envoi message à l'admin au lieue du bénéficiaire
-            $mes = $envoiMail->envoi($user, $account, $userOrigin);
+            $mes = $envoiMail->envoi($user, $compte, $montant, $userOrigin);
             $mailer->send($mes);
             $this->addFlash(
                 'success',

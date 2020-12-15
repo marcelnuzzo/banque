@@ -33,6 +33,16 @@ class Bankaccount
      */
     private $users;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $beneficiary;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $createdAt;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -70,6 +80,30 @@ class Bankaccount
     public function setUsers(?User $users): self
     {
         $this->users = $users;
+
+        return $this;
+    }
+
+    public function getBeneficiary(): ?string
+    {
+        return $this->beneficiary;
+    }
+
+    public function setBeneficiary(?string $beneficiary): self
+    {
+        $this->beneficiary = $beneficiary;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
 
         return $this;
     }

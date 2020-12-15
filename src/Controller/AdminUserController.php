@@ -48,13 +48,14 @@ class AdminUserController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
             // création d'un compte avec un iban pour ce nouveau client
-            $account = $repo->findAll();
+            $accounts = $repo->findAll();
             // App\Service\NewUserAccount, création iban unique
-            $newIban = $newUserAccount->getNewUserAccount($account);
+            $newIban = $newUserAccount->getNewUserAccount($accounts);
             $account = new Bankaccount();
             $account->setAmount(0)
                     ->setIban($newIban)
                     ->setUsers($user)
+                    ->setCreatedAt(new \DateTime('now', new \DateTimeZone('Europe/Paris')));
                     ;
                     $entityManager->persist($account);
                     $entityManager->flush();  

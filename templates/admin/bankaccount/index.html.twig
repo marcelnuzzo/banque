@@ -22,6 +22,7 @@
                 <th>Iban</th>
                 <th>Montant (€)</th>
                 <th>Client</th>
+                <th>Date de création</th>
                 <th>Voir</th>
                 <th>Modifier</th>
             </tr>
@@ -33,6 +34,7 @@
                 <td>{{ bankaccount.iban }}</td>
                 <td>{{ bankaccount.amount }}</td>
                 <td>{{ bankaccount.users.fullname }}</td>
+                <td>{{ bankaccount.createdAt|date('d/m/Y') }}</td>
                 <td>
                     <a class="btn btn-info" href="{{ path('admin_bankaccount_show', {'id': bankaccount.id}) }}">Voir</a>
                 </td>
@@ -48,5 +50,4 @@
         </tbody>
     </table>
 
-    <a href="{{ path('admin_bankaccount_new') }}">Créer nouveau</a>
 {% endblock %}

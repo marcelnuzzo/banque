@@ -4,11 +4,12 @@ namespace App\Controller;
 
 use App\Entity\Bankaccount;
 use App\Form\BankaccountType;
+use App\Service\NewUserAccount;
 use App\Repository\BankaccountRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
  * @Route("/admin/bankaccount")
@@ -28,13 +29,17 @@ class AdminBankaccountController extends AbstractController
     /**
      * @Route("/new", name="admin_bankaccount_new", methods={"GET","POST"})
      */
-    public function new(Request $request): Response
+    public function new(Request $request, BankaccountRepository $repo, NewUserAccount $newUserAccount): Response
     {
         $bankaccount = new Bankaccount();
         $form = $this->createForm(BankaccountType::class, $bankaccount);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $accounts = $repo->findAll();
+            $newIban = $newUserAccount->getNewUserAccount($accounts);
+            $bankaccount->setIban($newIban);
+            $bankaccount->setCreatedAt(new \DateTime('now', new \DateTimeZone('Europe/Paris')));
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($bankaccount);
             $entityManager->flush();

@@ -18,6 +18,7 @@
 }
 h2 {
     text-align: center;
+    //text-decoration: underline;
 }
 b {
     color: purple;
@@ -25,8 +26,8 @@ b {
 </style>
 
     <div class="container">
+    {% if user is same as(app.user) %}
         <div class="row">
-        {% if user is same as(app.user) %}
             <div class="col-2"></div>
             <div class="col-8">
                 <h1>{{ user.fullName }}</h1> 
@@ -38,31 +39,38 @@ b {
             </div>
             <div class="col-2"></div>
         </div>
+        <h2 class="souligne">Vos comptes banquaires</h2>
         <div class="row">
+            
             <div class="col-2"></div>
-            <div class="col-8" class="centrer">
-                <div class="text-center ombre">
-                    {{user.firstname}}</br>
-                    {{user.lastname}}</br>
-                    {{user.birthdayAt|date('d-m-Y')}}</br>
-                    {{user.email}}</br>
-                </div>
+            <div class="col-8">
+            <h3>Comptes et soldes de vos bénéficiaires :</h3>
+                {% if benefUser is not null %}
+                <ul>
+                    {% for benef in beneficiaries %}
+                    <b>Iban : </b><li>{{benef.iban}}</li>
+                    <b>Solde : </b><li>{{benef.amount}} €</li>
+                     <b>Nom : </b><li>{{benefUser.firstname}}</li>
+                    <b>Prénom : </b><li>{{benefUser.lastname}}</li>
+                    <b>Email : </b><li>{{benefUser.email}}</li>
+                    <hr>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                    <h4><b>Vous n'avez pas encore de bénéficiaires</b></h4>
+                {% endif %}
+            <h3>Vos propres comptes et soldes :</h3>
+                <ul>
+                    {% for mine in userAccount %}
+                    <b>Iban : </b><li>{{mine.iban}}</li>
+                    <b>Solde : </b><li>{{mine.amount}} €</li>
+                    <hr>
+                    {% endfor %}
+                </ul>
             </div>
             <div class="col-2"></div>
         </div>
-        <h2>Vos comptes banquaires</h2>
-        <div class="row">
-            <div class="col-3"></div>
-            <div class="col-6">
-            <ul>
-            {% for account in user.bankaccounts %}
-                <li><h3><strong>Iban numéro : </strong><b>{{ account.iban }}<b></h3></li>
-            {% endfor %}
-            </ul>
-            </div>
-            <div class="col-3"></div>
-        </div>
-        {% endif %}
+    {% endif %}
        
     </div>
 
