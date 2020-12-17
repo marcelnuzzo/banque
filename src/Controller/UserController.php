@@ -26,33 +26,54 @@ class UserController extends AbstractController
      */
     public function index(BankaccountRepository $BankRepo, UserRepository $userRepo): Response
     {
+        // On récupère l'id de l'utilisateur connecté
         $user = $this->getUser();
-        $idUser = $this->getUser()->getId();
-        // recherche des comptes utilisateurs n'ayant pas de bénéficiaire
-        $userAccount = $BankRepo->findAccountUser($idUser);
-        // recherche des bénéficiaires rattachés à ce client
-        $beneficiaries = $BankRepo->findBenficiaryUser($idUser);
-        if($beneficiaries) {
-            $idBeneficiary = $beneficiaries[0]->getBeneficiary();
-            $benefUser = $userRepo->find($idBeneficiary);
+        $idUser = $this->getUser()->getId();  
+        // On regarde s'il est donateur 
+        $donator = $BankRepo->findAccountUser($idUser);
+        if($donator) {
+            // On récupère son enregistrement
+            $donator = $BankRepo->findAccountUser($idUser)[0];
+            // On regarde s'il a des bénéficiaires
+            $tabBenef = $BankRepo->findBeneficiaries($idUser);
+            $beneficiary = null;
         } else {
-            $benefUser = null;
+            // On regarde s'il est bénéficiaire
+            $beneficiary = $BankRepo->findBenficiary($idUser);
+            $tabBenef = null;
         }
-      
+        $str = chr(240) . chr(159) . chr(144) . chr(152);
         return $this->render('user/index.html.twig', [
             'user' => $user,
-            'beneficiaries' => $beneficiaries,
-            'userAccount' => $userAccount,
-            'benefUser' => $benefUser,
+            'donator' => $donator,
+            'beneficiary' => $beneficiary,
+            'tabBenef' => $tabBenef,
+            'str' => $str,
+        ]);
+    }
+
+    /**
+     * @Route("/transfert", name="user_transfert")
+     * 
+     * @return Response
+     */
+    public function transfert() 
+    {
+        return $this->render('user/transfert.html.twig', [
+            'user' => $this->getUser()
         ]);
     }
 
     /**
      * @Route("/newBeneficiary", name="user_newBeneficiary", methods={"GET","POST"})
+     * 
+     * @return Response
      */
     public function newBeneficiary(Request $request, BankaccountRepository $repo, UserPasswordEncoderInterface $encoder, NewUserAccount $newUserAccount, \Swift_Mailer $mailer,  EnvoiMail $envoiMail)
     {
+        // on récupère l'identifiant du nouveau bénéficiaire
         $userOrigin = $this->getUser();
+        $idTestator = $userOrigin->getId();
         $withoutPw = false;
         $user = new User();
         $form = $this->createForm(UserType::class, $user, [
@@ -62,12 +83,10 @@ class UserController extends AbstractController
         
         if ($form->isSubmitted() && $form->isValid()) {       
             $entityManager = $this->getDoctrine()->getManager();
-            $hash = $encoder->encodePassword($user, $user->getPassword());
+            $hash = $encoder->encodePassword($user, '1234');
             $user->setPassword($hash);
             $entityManager->persist($user);
             $entityManager->flush();
-            // on récupère l'identifiant du nouveau bénéficiaire
-            $idBeneficiary = $user->getId();
              // trouver tout les iban de la banque
              $accounts = $repo->findAll();
              // App\Service\NewUserAccount, création iban unique
@@ -76,14 +95,15 @@ class UserController extends AbstractController
              $account = new Bankaccount();
              $account->setAmount(10)
                      ->setIban($newIban)
-                     ->setUsers($userOrigin)
-                     ->setBeneficiary($idBeneficiary)
+                     ->setUsers($user)
+                     ->setTestator($idTestator)
                      ->setCreatedAt(new \DateTime('now', new \DateTimeZone('Europe/Paris')))
                      ;
                      $entityManager->persist($account);
                      $entityManager->flush();  
                      $compte = $account->getIban();
                      $montant = $account->getAmount();
+            
             // envoi message à l'admin au lieue du bénéficiaire
             $mes = $envoiMail->envoi($user, $compte, $montant, $userOrigin);
             $mailer->send($mes);

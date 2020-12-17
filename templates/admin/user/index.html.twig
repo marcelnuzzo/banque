@@ -56,8 +56,8 @@
                 <td>
                     <ul>
                     {% for account in user.bankaccounts %}
-                        {% if account.beneficiary %}
-                        <li>{{ account.beneficiary }}</li>
+                        {% if account.testator %}
+                        <li>{{ account.testator }}</li>
                         {% endif %}
                     {% endfor %}
                     </ul>   

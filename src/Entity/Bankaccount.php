@@ -36,7 +36,7 @@ class Bankaccount
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $beneficiary;
+    private $testator;
 
     /**
      * @ORM\Column(type="datetime")
@@ -84,14 +84,14 @@ class Bankaccount
         return $this;
     }
 
-    public function getBeneficiary(): ?string
+    public function getTestator(): ?string
     {
-        return $this->beneficiary;
+        return $this->testator;
     }
 
-    public function setBeneficiary(?string $beneficiary): self
+    public function setTestator(?string $testator): self
     {
-        $this->beneficiary = $beneficiary;
+        $this->testator = $testator;
 
         return $this;
     }

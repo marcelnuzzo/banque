@@ -30,5 +30,7 @@
 
     <a class="btn btn-info" href="{{ path('admin_bankaccount_edit', {'id': bankaccount.id}) }}">Editer</a>
 
+    <a class="btn btn-primary" href="{{ path('admin_bankaccount_credit', {'id': bankaccount.id}) }}">Créditer</a>
+
     {{ include('admin/bankaccount/_delete_form.html.twig') }}
 {% endblock %}

@@ -39,7 +39,7 @@ security:
 
       logout:
         path: account_logout
-        target: account_login
+        target: homepage
 
       # activate different ways to authenticate
       # https://symfony.com/doc/current/security.html#firewalls-authentication
@@ -54,3 +54,4 @@ security:
   access_control:
     - { path: ^/admin/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
     - { path: ^/admin, roles: ROLE_ADMIN }
+    - { path: ^/user, roles: ROLE_USER }

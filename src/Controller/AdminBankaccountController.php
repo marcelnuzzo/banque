@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Bankaccount;
+use App\Form\AmountType;
 use App\Form\BankaccountType;
 use App\Service\NewUserAccount;
 use App\Repository\BankaccountRepository;
@@ -78,6 +79,34 @@ class AdminBankaccountController extends AbstractController
         }
 
         return $this->render('admin/bankaccount/edit.html.twig', [
+            'bankaccount' => $bankaccount,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * @Route("/{id}/credit", name="admin_bankaccount_credit", methods={"GET","POST"})
+     */
+    public function credit($id, Request $request, Bankaccount $bankaccount, BankaccountRepository $repo): Response
+    {
+        $form = $this->createForm(AmountType::class);
+        $form->handleRequest($request);
+        $bank = $repo->find($id);
+        //dd($user);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->getDoctrine()->getManager()->flush();
+            $newAmount = $form->getData()["amount"];   
+            $oldAmount = $repo->find($id)->getAmount();
+            $amount = $newAmount + $oldAmount;
+            $bank->setAmount($amount);
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($bank);
+            $entityManager->flush();
+            return $this->redirectToRoute('admin_bankaccount');
+        }
+
+        return $this->render('admin/bankaccount/credit.html.twig', [
             'bankaccount' => $bankaccount,
             'form' => $form->createView(),
         ]);

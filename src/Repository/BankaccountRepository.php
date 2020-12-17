@@ -22,6 +22,7 @@ class BankaccountRepository extends ServiceEntityRepository
         parent::__construct($registry, Bankaccount::class);
     }
 
+    // Si celui qui est connecté, est donateur
     // /**
     //  * @return Bankaccount[] Returns an array of Bankaccount objects
     //  */
@@ -29,7 +30,21 @@ class BankaccountRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('b')
             ->andWhere('b.users = :val')
-            ->andWhere('b.beneficiary IS NULL')
+            ->andWhere('b.testator IS NULL')
+            ->setParameter('val', $idUser)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+     // Si celui qui est donateur, a des bénéficiaires
+    // /**
+    //  * @return Bankaccount[] Returns an array of Bankaccount objects
+    //  */
+    public function findBeneficiaries($idUser)
+    {
+        return $this->createQueryBuilder('b')
+            ->andWhere('b.testator = :val')
             ->setParameter('val', $idUser)
             ->getQuery()
             ->getResult()
@@ -39,11 +54,11 @@ class BankaccountRepository extends ServiceEntityRepository
      // /**
     //  * @return Bankaccount[] Returns an array of Bankaccount objects
     //  */
-    public function findBenficiaryUser($idUser)
+    public function findBenficiary($idUser)
     {
         return $this->createQueryBuilder('b')
             ->andWhere('b.users = :val')
-            ->andWhere('b.beneficiary IS NOT NULL')
+            ->andWhere('b.testator IS NOT NULL')
             ->setParameter('val', $idUser)
             //->setParameter('val2', null )
             ->getQuery()

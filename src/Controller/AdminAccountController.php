@@ -16,7 +16,6 @@ class AdminAccountController extends AbstractController
     {
         $error = $utils->getLastAuthenticationError();
         $username = $utils->getLastUsername();
-
         return $this->render('admin/account/login.html.twig', [
             'hasError' => $error !== null,
             'username' => $username

@@ -16,62 +16,91 @@
 .row {
     margin-bottom: 30px;
 }
-h2 {
+h2, h3, h4 {
     text-align: center;
+    margin-bottom: 15px;
     //text-decoration: underline;
 }
 b {
     color: purple;
 }
+.a {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
 </style>
 
     <div class="container">
     {% if user is same as(app.user) %}
         <div class="row">
-            <div class="col-2"></div>
-            <div class="col-8">
+            <div class="col">
                 <h1>{{ user.fullName }}</h1> 
-                <div class="mt-3">
+                <div class="mt-5">
                     <a href="{{ path('account_profile') }}" class="btn btn-primary">Modifier mes informations</a>
                     <a href="{{ path('account_password') }}" class="btn btn-primary">Modifier mon mot de passe</a>
+                    {% if donator %}
                     <a href="{{ path('user_newBeneficiary') }}" class="btn btn-primary">Créer un bénéficiaire</a>
+                    <a href="{{ path('user_transfert') }}" class="btn btn-primary">Effectuer un virement</a>
+                    {% endif %}
                 </div>
             </div>
-            <div class="col-2"></div>
         </div>
+    </div>
+    <div class="container">
         <h2 class="souligne">Vos comptes banquaires</h2>
+        {% if donator %}
         <div class="row">
-            
-            <div class="col-2"></div>
-            <div class="col-8">
-            <h3>Comptes et soldes de vos bénéficiaires :</h3>
-                {% if benefUser is not null %}
+            <div class="col-3"></div>
+            <div class="col-6">
+                <h3>Comptes et soldes de vos bénéficiaires : </h3>
                 <ul>
-                    {% for benef in beneficiaries %}
-                    <b>Iban : </b><li>{{benef.iban}}</li>
-                    <b>Solde : </b><li>{{benef.amount}} €</li>
-                     <b>Nom : </b><li>{{benefUser.firstname}}</li>
-                    <b>Prénom : </b><li>{{benefUser.lastname}}</li>
-                    <b>Email : </b><li>{{benefUser.email}}</li>
-                    <hr>
-                    {% endfor %}
-                </ul>
-                {% else %}
-                    <h4><b>Vous n'avez pas encore de bénéficiaires</b></h4>
-                {% endif %}
-            <h3>Vos propres comptes et soldes :</h3>
-                <ul>
-                    {% for mine in userAccount %}
-                    <b>Iban : </b><li>{{mine.iban}}</li>
-                    <b>Solde : </b><li>{{mine.amount}} €</li>
+                    {% for ben in tabBenef %}
+                    <li><b>Iban : </b>{{ben.iban}}</li>
+                    <li><b>Solde : </b>{{ben.amount}} €</li>
+                    <li><b>Prénom : </b>{{ben.users.firstname}}</li>
+                    <li><b>Nom : </b>{{ben.users.lastname}}</li>
+                    <li><b>Email : </b>{{ben.users.email}}</li>
                     <hr>
                     {% endfor %}
                 </ul>
             </div>
-            <div class="col-2"></div>
+            <div class="col-3"></div>
+        </div>   
+    </div>
+    <div class="container">  
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-6">
+            <h3>Vos propres comptes et soldes :</h3>
+                <ul>
+                    <li><b>Compte : </b>{{donator.iban}}</li>
+                    <li><b>Solde : </b>{{donator.amount}} €</li>
+                    <li><b>Donateur : </b>{{donator.users.fullname}}</li>
+                </ul>
+            </div>
+            <div class="col-3"></div>
         </div>
-    {% endif %}
-       
+    </div>
+    <div class="container">
+        {% endif %}
+        {% if beneficiary %}
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-6">
+                <ul>
+                    {% for user in beneficiary %}
+                    <b>Iban : </b><li>{{user.iban}}</li>
+                    <b>Solde : </b><li>{{user.amount}} €</li>
+                    <b>Titulaire : </b><li>{{user.users.fullname}}</li>
+                    <hr>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="col-3"></div>
+        </div>
+        {% endif %}
+    {% endif %}       
     </div>
 
 {% endblock %}

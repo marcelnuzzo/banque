@@ -1,0 +1,18 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Compte en banque{% endblock %}
+
+{% block body %}
+
+ {{ form_start(form) }}
+
+    {{ form_row(form.amount, {'attr': {'placeholder': "montant"}}) }}
+    
+    <button type="submit" class="btn btn-success">
+        Enregistrer
+    </button>
+    
+    {{ form_end(form) }}
+
+
+{% endblock %}
