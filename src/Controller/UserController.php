@@ -7,6 +7,7 @@ use App\Form\UserType;
 use App\Service\EnvoiMail;
 use App\Entity\Bankaccount;
 use App\Form\TransfertType;
+use App\Service\Transaction;
 use App\Service\NewUserAccount;
 use App\Repository\UserRepository;
 use App\Repository\BankaccountRepository;
@@ -70,7 +71,7 @@ class UserController extends AbstractController
      * 
      * @return Response
      */
-    public function transfert($id, Request $request, BankaccountRepository $repo, UserRepository $userRepo) 
+    public function transfert($id, Request $request, BankaccountRepository $repo, UserRepository $userRepo, Transaction $transaction) 
     { 
         $idUser = $this->getUser()->getId();
         $accountUser = $repo->find($id);
@@ -90,12 +91,8 @@ class UserController extends AbstractController
         $form->handleRequest($request);  
         if ($form->isSubmitted() && $form->isValid()) {
             $this->getDoctrine()->getManager()->flush();  
-            $idDest = $form->getData()->getUsers()->getId();  
-            $dest = $repo->findDestinatary($idUser, $idDest);
-            $oldAmount = $dest[0]->getAmount(); 
-            $newAmount = $form->getData()->getAmount();     
-            $balance = $oldAmount + $newAmount; 
-            $balanceUser = $oldAmountUser - $newAmount;            
+            $transactions = $transaction->creditDebit($form, $repo, $idUser, $oldAmountUser);
+            $balanceUser = $transactions["balanceUser"]; $dest = $transactions["dest"]; $balance = $transactions["balance"];
             if($balanceUser <= 0) {
                 $this->addFlash(
                     'danger',
