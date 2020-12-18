@@ -61,8 +61,10 @@ class UserController extends AbstractController
     {
         $idUser = $this->getUser()->getId();  
         $donator = $BankRepo->findAccountUser($idUser);
+        $tabBenef = $BankRepo->findBeneficiaries($idUser);
         return $this->render('user/list.html.twig', [
             'donator' => $donator,
+            'tabBenef' => $tabBenef,
         ]);
     }
 
@@ -92,7 +94,8 @@ class UserController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->getDoctrine()->getManager()->flush();  
             $transactions = $transaction->creditDebit($form, $repo, $idUser, $oldAmountUser);
-            $balanceUser = $transactions["balanceUser"]; $dest = $transactions["dest"]; $balance = $transactions["balance"];
+            $balanceUser = $transactions["balanceUser"]; 
+            $dest = $transactions["dest"]; $balance = $transactions["balance"];
             if($balanceUser <= 0) {
                 $this->addFlash(
                     'danger',
@@ -149,7 +152,7 @@ class UserController extends AbstractController
              $newIban = $newUserAccount->getNewUserAccount($accounts);
              // création d'un compte avec un iban pour ce nouveau client
              $account = new Bankaccount();
-             $account->setAmount(10)
+             $account->setAmount(0)
                      ->setIban($newIban)
                      ->setUsers($user)
                      ->setTestator($idTestator)

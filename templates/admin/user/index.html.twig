@@ -11,15 +11,25 @@
     td {
         width: 150px;
     }
+    .jumbotron {
+        display: block; 
+        background-color: linear-gradient(blue, white);;"
+    }
+    b {
+        background-color: yellow;
+    }
 </style>
 
-<div class = "jumbotron"  style="display:block; background-color: powderblue;">
+<div class ="jumbotron">
     <h1><mark> Les clients</mark></h1>
     <div class="row" style="margin-top:25px">
         <div class="col-3">
-            <a class="btn btn-primary" href="{{ path('admin_user_new') }}">Créer nouveau client</a>
+            <a class="btn btn-primary" href="{{ path('admin_user_new') }}">Créer nouveau client</a>&nbsp;
         </div>
-        <div class="col"></div>
+        <div class="col-4">
+            <b>ainsi que automatiquement son compte banquaire</b>
+        </div>
+        <div class="col-5"></div>
     </div>
 </div>
     
@@ -34,7 +44,6 @@
                 <th>Date de naissance</th>
                 <th>Comptes</th>
                 <th>Bénéficiaire</th>
-                <th class="centrer">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -63,10 +72,13 @@
                     </ul>   
                 </td>
                 <td>
-                    <a class="btn btn-warning" href="{{ path('admin_user_show', {'id': user.id}) }}">Voir</a>
+                    <a class="btn btn-info" href="{{ path('admin_user_show', {'id': user.id}) }}">Voir</a>
                 </td>
                 <td>
-                    <a class="btn btn-danger" href="{{ path('admin_user_edit', {'id': user.id}) }}">Editer</a>
+                    <a class="btn btn-warning" href="{{ path('admin_user_edit', {'id': user.id}) }}">Editer</a>
+                </td>
+                <td>
+                    {{ include('admin/user/_delete_form.html.twig') }}
                 </td>
             </tr>
         {% else %}

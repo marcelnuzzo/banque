@@ -123,6 +123,6 @@ class AdminBankaccountController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('admin_bankaccount_index');
+        return $this->redirectToRoute('admin_bankaccount');
     }
 }

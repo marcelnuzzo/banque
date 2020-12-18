@@ -25,6 +25,7 @@
                 <th>Date de création</th>
                 <th>Voir</th>
                 <th>Modifier</th>
+                <th>Supprimer</th>
             </tr>
         </thead>
         <tbody>
@@ -40,6 +41,9 @@
                 </td>
                 <td>
                     <a class="btn btn-warning" href="{{ path('admin_bankaccount_edit', {'id': bankaccount.id}) }}">Editer</a>
+                </td>
+                <td>
+                    {{ include('admin/bankaccount/_delete_form.html.twig') }}
                 </td>
             </tr>
         {% else %}

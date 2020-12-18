@@ -94,10 +94,8 @@ p {
             </div>
         </div>
     </div>
-        {% endif %}
+        {% elseif beneficiary %}
     <div class="container">
-        
-        {% if beneficiary %}
         <div class="row">
             
             <div class="col-3"></div>
@@ -114,8 +112,11 @@ p {
             </div>
             <div class="col-3"></div>
         </div>
+        {% else %}
+            <p>Vous n'avez pas encore de compte en banque.</p>
+            <p>Votre conseiller est en train de vous le créer</p> 
         {% endif %}
-    {% endif %}       
+    {% endif %}  
     </div>
 
 {% endblock %}
