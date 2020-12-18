@@ -4,6 +4,20 @@
 
 {% block body %}
 
+<div class="container">
+    <h1>Effectuer un virement à un de vos bénéficiaires</h1>
+     {{ form_start(form) }}
+
+    {{ form_row(form.amount, {'attr': {'placeholder': "montant"}}) }}
+    {{ form_row(form.users, {'attr': {'placeholder': "email"}}) }}
+    
+    <button type="submit" class="btn btn-success">
+        Enregistrer
+    </button>
+    
+    {{ form_end(form) }}
+    <a class="btn btn-warning" href="{{ path('user_index') }}">Revenir sur votre page</a>
+</div>
 
 
 {% endblock %}

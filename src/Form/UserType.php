@@ -14,6 +14,7 @@ class UserType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $withoutPw = $options['withoutPw'];
+        //dd($withoutPw);
             $builder
                 ->add('email')
             //->add('roles')

@@ -28,6 +28,9 @@ b {
     margin-top: 15px;
     margin-bottom: 15px;
 }
+p {
+    font-size: 1.5em;
+}
 
 </style>
 
@@ -41,15 +44,17 @@ b {
                     <a href="{{ path('account_password') }}" class="btn btn-primary">Modifier mon mot de passe</a>
                     {% if donator %}
                     <a href="{{ path('user_newBeneficiary') }}" class="btn btn-primary">Créer un bénéficiaire</a>
-                    <a href="{{ path('user_transfert') }}" class="btn btn-primary">Effectuer un virement</a>
                     {% endif %}
                 </div>
             </div>
         </div>
     </div>
     <div class="container">
-        <h2 class="souligne">Vos comptes banquaires</h2>
+        {% if is_granted("ROLE_ADMIN") %}
+        <p>Veuillez vous identifier en saisissant "admin" dans l'URL<p>
+        {% endif %}
         {% if donator %}
+        <h2 class="souligne">Vos comptes banquaires</h2>
         <div class="row">
             <div class="col-3"></div>
             <div class="col-6">
@@ -74,12 +79,19 @@ b {
             <div class="col-6">
             <h3>Vos propres comptes et soldes :</h3>
                 <ul>
-                    <li><b>Compte : </b>{{donator.iban}}</li>
-                    <li><b>Solde : </b>{{donator.amount}} €</li>
-                    <li><b>Donateur : </b>{{donator.users.fullname}}</li>
+                    {% for don in donator %}
+                    <li><b>Compte : </b>{{don.iban}}</li>
+                    <li><b>Solde : </b>{{don.amount}} €</li>
+                    {% if beneficiary %}
+                    <li><b>Donateur : </b>{{don.users.fullname}}</li>
+                    {% endif %}
+                    <hr>
+                    {% endfor %} 
                 </ul>
             </div>
-            <div class="col-3"></div>
+            <div class="col-3">
+                <a href="{{ path("user_list") }}" class="btn btn-info">Détail de vos comptes</a>
+            </div>
         </div>
     </div>
     <div class="container">

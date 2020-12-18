@@ -66,6 +66,21 @@ class BankaccountRepository extends ServiceEntityRepository
         ;
     }
 
+     // /**
+    //  * @return Bankaccount[] Returns an array of Bankaccount objects
+    //  */
+    public function findDestinatary($idUser, $idDest)
+    {
+        return $this->createQueryBuilder('b')
+            ->andWhere('b.users = :val')
+            ->andWhere('b.testator = :val2')
+            ->setParameter('val', $idDest)
+            ->setParameter('val2',$idUser )
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
     // /**
     //  * @return Bankaccount[] Returns an array of Bankaccount objects
     //  */

@@ -11,7 +11,9 @@
 {% block body %}
 <div class="container">
     <div class="jumbotron mt-3">
-        {% if(app.user) %}
+        {% if is_granted("ROLE_ADMIN") %}
+            <h1 style="color:red;">Vous êtes administrateur. vous devez vous identifier en saisissant "admin" dans l'URL, merci.</h1>    
+        {% elseif (app.user) %}
             <h1 class="display-3">Bienvenu dans votre banque</h1>
             <h2 class="margeHaut"><strong>{{ user.fullname }}</strong></h2>
         {% else %}

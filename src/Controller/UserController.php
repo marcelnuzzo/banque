@@ -4,12 +4,12 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\UserType;
-use App\Entity\Bankaccount;
 use App\Service\EnvoiMail;
+use App\Entity\Bankaccount;
+use App\Form\TransfertType;
 use App\Service\NewUserAccount;
 use App\Repository\UserRepository;
 use App\Repository\BankaccountRepository;
-
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -31,9 +31,8 @@ class UserController extends AbstractController
         $idUser = $this->getUser()->getId();  
         // On regarde s'il est donateur 
         $donator = $BankRepo->findAccountUser($idUser);
+        //dd($donator);
         if($donator) {
-            // On récupère son enregistrement
-            $donator = $BankRepo->findAccountUser($idUser)[0];
             // On regarde s'il a des bénéficiaires
             $tabBenef = $BankRepo->findBeneficiaries($idUser);
             $beneficiary = null;
@@ -53,14 +52,74 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/transfert", name="user_transfert")
+     * @Route("/list", name="user_list", methods={"GET"})
      * 
      * @return Response
      */
-    public function transfert() 
+    public function list(BankaccountRepository $BankRepo)
     {
+        $idUser = $this->getUser()->getId();  
+        $donator = $BankRepo->findAccountUser($idUser);
+        return $this->render('user/list.html.twig', [
+            'donator' => $donator,
+        ]);
+    }
+
+    /**
+     * @Route("/{id}/transfert", name="user_transfert", methods={"GET","POST"})
+     * 
+     * @return Response
+     */
+    public function transfert($id, Request $request, BankaccountRepository $repo, UserRepository $userRepo) 
+    { 
+        $idUser = $this->getUser()->getId();
+        $accountUser = $repo->find($id);
+        $oldAmountUser = $repo->find($id)->getAmount();
+        $benef = $repo->findBeneficiaries($idUser);
+        $nbBenef = count($benef);
+        for($i=0; $i<$nbBenef; $i++) {
+            $idUsers[] = $benef[$i]->getUsers()->getId();
+        }
+        for($i=0;$i<$nbBenef;$i++) {
+            $beneficiaries[] = $userRepo->find($idUsers[$i]);
+        }
+        $bank = new Bankaccount();
+        $form = $this->createForm(TransfertType::class, $bank, [
+            "beneficiaries" => $beneficiaries,
+        ]);
+        $form->handleRequest($request);  
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->getDoctrine()->getManager()->flush();  
+            $idDest = $form->getData()->getUsers()->getId();  
+            $dest = $repo->findDestinatary($idUser, $idDest);
+            $oldAmount = $dest[0]->getAmount(); 
+            $newAmount = $form->getData()->getAmount();     
+            $balance = $oldAmount + $newAmount; 
+            $balanceUser = $oldAmountUser - $newAmount;            
+            if($balanceUser <= 0) {
+                $this->addFlash(
+                    'danger',
+                    "Votre compte n'est pas assez approvisionné pour ce transfert"
+                );
+                return $this->redirectToRoute('user_list');
+            } else {
+                $dest[0]->setAmount($balance);
+                $entityManager = $this->getDoctrine()->getManager();
+                $entityManager->persist($dest[0]);
+                $accountUser->setAmount($balanceUser);
+                $entityManager->persist($accountUser);
+                $entityManager->flush();
+                $this->addFlash(
+                    'success',
+                    "Votre compte a bien été débité et celui de votre bénéficiare a bien été crédité"
+                );
+                return $this->redirectToRoute('user_index');
+            }
+        }
+
         return $this->render('user/transfert.html.twig', [
-            'user' => $this->getUser()
+            'user' => $this->getUser(),
+            'form' => $form->createView(),
         ]);
     }
 
