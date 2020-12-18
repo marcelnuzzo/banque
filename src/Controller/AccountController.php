@@ -68,7 +68,7 @@ class AccountController extends AbstractController
 
             $this->addFlash(
                 'success',
-                "Votre compte a bien été créer ! Vous pouvez maintenant vous connecter !"
+                "Votre demande de création de compte banquaire a été enregistré."
             );
             return $this->redirectToRoute('account_login');
         }

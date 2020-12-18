@@ -23,7 +23,7 @@
                 <td>{{ bankaccount.amount }}</td>
                 <td>{{ bankaccount.createdAt|date('d/m/Y') }}</td>
                 <td>
-                    {% if tabBenef %}
+                    {% if donator and tabBenef %}
                     <a class="btn btn-warning" href="{{ path('user_transfert', {'id': bankaccount.id}) }}">Transférer</a>
                     {% else %}
                     <a class="btn btn-warning disabled" href="{{ path('user_transfert', {'id': bankaccount.id}) }}">Transférer</a>
