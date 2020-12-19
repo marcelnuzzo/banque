@@ -4,16 +4,21 @@ namespace App\Service;
 
 class Transaction {
 
-    public function creditDebit($form, $repo, $idUser, $oldAmountUser)
+    public function desrinatary($form)
     {
-        $idDest = $form->getData()->getUsers()->getId();  
-        $dest = $repo->findDestinatary($idUser, $idDest);
-        $oldAmount = $dest[0]->getAmount(); 
-        $newAmount = $form->getData()->getAmount();     
+        $ibanDest = $form->getData()->getIban();
+        
+        return $ibanDest;
+    }
+
+    public function creditDebit($form, $oldAmountUser, $destAccount)
+    {
+        $oldAmount = $destAccount[0]->getAmount(); 
+        $newAmount = $form->getData()->getAmount();  
         $balance = $oldAmount + $newAmount; 
         $balanceUser = $oldAmountUser - $newAmount; 
-
-        return compact('dest', 'balance', 'balanceUser');
+        
+        return compact('balance', 'balanceUser');
 
     }
 }

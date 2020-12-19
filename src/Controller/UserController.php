@@ -16,12 +16,14 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 /**
  * @Route("/user")
  */
 class UserController extends AbstractController
 {
+
     /**
      * @Route("/", name="user_index", methods={"GET"})
      */
@@ -62,6 +64,11 @@ class UserController extends AbstractController
         $idUser = $this->getUser()->getId();  
         $donator = $BankRepo->findAccountUser($idUser);
         $tabBenef = $BankRepo->findBeneficiaries($idUser);
+        $ibanUser = $donator[0]->getIban();
+        $session = new Session();
+        //$session->start();
+        $session->set('iban', $ibanUser);
+        
         return $this->render('user/list.html.twig', [
             'donator' => $donator,
             'tabBenef' => $tabBenef,
@@ -81,21 +88,24 @@ class UserController extends AbstractController
         $benef = $repo->findBeneficiaries($idUser);
         $nbBenef = count($benef);
         for($i=0; $i<$nbBenef; $i++) {
-            $idUsers[] = $benef[$i]->getUsers()->getId();
-        }
-        for($i=0;$i<$nbBenef;$i++) {
-            $beneficiaries[] = $userRepo->find($idUsers[$i]);
+            $ibans[] = $benef[$i];
         }
         $bank = new Bankaccount();
         $form = $this->createForm(TransfertType::class, $bank, [
-            "beneficiaries" => $beneficiaries,
+            'ibans' => $ibans,
+            //'nbBenef' => $nbBenef,
         ]);
         $form->handleRequest($request);  
         if ($form->isSubmitted() && $form->isValid()) {
             $this->getDoctrine()->getManager()->flush();  
-            $transactions = $transaction->creditDebit($form, $repo, $idUser, $oldAmountUser);
+            $ibanDest = $transaction->desrinatary($form);
+            $destAccount = $repo->findAccountIban($ibanDest);
+           
+            $transactions = $transaction->creditDebit($form, $oldAmountUser, $destAccount);
             $balanceUser = $transactions["balanceUser"]; 
-            $dest = $transactions["dest"]; $balance = $transactions["balance"];
+            
+            $balance = $transactions["balance"];
+            
             if($balanceUser <= 0) {
                 $this->addFlash(
                     'danger',
@@ -103,9 +113,9 @@ class UserController extends AbstractController
                 );
                 return $this->redirectToRoute('user_list');
             } else {
-                $dest[0]->setAmount($balance);
+                $destAccount[0]->setAmount($balance);
                 $entityManager = $this->getDoctrine()->getManager();
-                $entityManager->persist($dest[0]);
+                $entityManager->persist($destAccount[0]);
                 $accountUser->setAmount($balanceUser);
                 $entityManager->persist($accountUser);
                 $entityManager->flush();

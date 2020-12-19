@@ -81,6 +81,19 @@ class BankaccountRepository extends ServiceEntityRepository
         ;
     }
 
+     // /**
+    //  * @return Bankaccount[] Returns an array of Bankaccount objects
+    //  */
+    public function findAccountIban($ibanDest)
+    {
+        return $this->createQueryBuilder('b')
+            ->andWhere('b.iban = :val')
+            ->setParameter('val', $ibanDest)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
     // /**
     //  * @return Bankaccount[] Returns an array of Bankaccount objects
     //  */
