@@ -28,7 +28,6 @@ class AppFixtures extends Fixture
                 $user,
                 '1234'
             ));
-         
         
         $manager->persist($user);
 

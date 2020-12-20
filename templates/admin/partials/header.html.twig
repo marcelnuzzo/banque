@@ -8,7 +8,7 @@
 	<div class="collapse navbar-collapse" id="navbarColor03">
 		<ul class="navbar-nav mr-auto">
 			<li class="nav-item">
-				<a class="nav-link" href="#">
+				<a class="nav-link" href="{{ path('admin_dashboard_list') }}">
 					<i class="fa fa-line-chart"></i>
 					Dashboard
 				</a>
@@ -50,6 +50,16 @@
 		</ul>
 	</div>
 </nav>
+<script>
+jQuery(document).ready(function(){
+
+     $path = window.location.href;
+     jQuery('a[href="' + $path + '"]').each(function(){
+       jQuery(this).addClass('active');
+     });
+
+});
+</script>
 
 {% for label, messages in app.flashes %}
 	<div class="container">

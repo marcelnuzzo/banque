@@ -22,6 +22,21 @@ class BankaccountRepository extends ServiceEntityRepository
         parent::__construct($registry, Bankaccount::class);
     }
 
+
+    // /**
+    //  * @return Bankaccount[] Returns an array of Bankaccount objects
+    //  */
+    public function findAccountUseruyuyu($idUser)
+    {
+        return $this->createQueryBuilder('b')
+            ->andWhere('b.users = :val')
+            ->andWhere('b.testator IS NULL')
+            ->setParameter('val', $idUser)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
     // Si celui qui est connecté, est donateur
     // /**
     //  * @return Bankaccount[] Returns an array of Bankaccount objects

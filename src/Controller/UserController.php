@@ -27,7 +27,7 @@ class UserController extends AbstractController
     /**
      * @Route("/", name="user_index", methods={"GET"})
      */
-    public function index(BankaccountRepository $BankRepo, UserRepository $userRepo): Response
+    public function index(BankaccountRepository $BankRepo): Response
     {
         // On récupère l'id de l'utilisateur connecté
         $user = $this->getUser();
@@ -80,7 +80,7 @@ class UserController extends AbstractController
      * 
      * @return Response
      */
-    public function transfert($id, Request $request, BankaccountRepository $repo, UserRepository $userRepo, Transaction $transaction) 
+    public function transfert($id, Request $request, BankaccountRepository $repo, Transaction $transaction) 
     { 
         $idUser = $this->getUser()->getId();
         $accountUser = $repo->find($id);
