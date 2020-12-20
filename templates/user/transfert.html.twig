@@ -8,8 +8,8 @@
     <h1>Effectuer un virement à un de vos bénéficiaires</h1>
      {{ form_start(form) }}
 
-    {{ form_row(form.amount, {'attr': {'placeholder': "montant"}}) }}
-    {{ form_row(form.iban, {'attr': {'placeholder': "iban"}}) }}
+    {{ form_row(form.amount) }}
+    {{ form_row(form.iban) }}
     
     <button type="submit" class="btn btn-success">
         Enregistrer

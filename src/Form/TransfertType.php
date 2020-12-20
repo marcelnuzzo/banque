@@ -27,7 +27,7 @@ class TransfertType extends AbstractType
         }
         $builder
             ->add('amount', TextType::class, [
-                'label' => "Entrer un montant",
+                'label' => "Montant",
                 'attr' => [
                     'placeholder' => "Veuillez entrer un montant en €"
                 ]
