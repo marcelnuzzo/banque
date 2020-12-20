@@ -8,7 +8,6 @@
     <table class="table table-striped table-bordered table-hover" style="border:2px solid black">
         <thead>
             <tr>
-                <th>Id</th>
                 <th>Iban</th>
                 <th>Solde (€)</th>
                 <th>Date de création</th>
@@ -18,7 +17,6 @@
         <tbody>
         {% for bankaccount in donator %}
             <tr>
-                <td>{{ bankaccount.id }}</td>
                 <td>{{ bankaccount.iban }}</td>
                 <td>{{ bankaccount.amount }}</td>
                 <td>{{ bankaccount.createdAt|date('d/m/Y') }}</td>

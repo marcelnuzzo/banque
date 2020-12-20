@@ -18,7 +18,7 @@ class Transaction {
         $balance = $oldAmount + $newAmount; 
         $balanceUser = $oldAmountUser - $newAmount; 
         
-        return compact('balance', 'balanceUser');
+        return compact('balance', 'balanceUser', 'newAmount');
 
     }
 }

@@ -6,11 +6,13 @@ use App\Entity\User;
 use App\Form\UserType;
 use App\Service\EnvoiMail;
 use App\Entity\Bankaccount;
+use App\Entity\History;
 use App\Form\TransfertType;
 use App\Service\Transaction;
 use App\Service\NewUserAccount;
 use App\Repository\UserRepository;
 use App\Repository\BankaccountRepository;
+use App\Repository\HistoryRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -27,7 +29,7 @@ class UserController extends AbstractController
     /**
      * @Route("/", name="user_index", methods={"GET"})
      */
-    public function index(BankaccountRepository $BankRepo): Response
+    public function index(BankaccountRepository $BankRepo, UserRepository $userRepo): Response
     {
         // On récupère l'id de l'utilisateur connecté
         $user = $this->getUser();
@@ -39,15 +41,20 @@ class UserController extends AbstractController
             // On regarde s'il a des bénéficiaires
             $tabBenef = $BankRepo->findBeneficiaries($idUser);
             $beneficiary = null;
+            $testator = null;
         } else {
             // On regarde s'il est bénéficiaire
             $beneficiary = $BankRepo->findBenficiary($idUser);
+            $don = $beneficiary[0]->getTestator();
+            $testator = $userRepo->find($don);
             $tabBenef = null;
         }
+        //dd($testator);
         $str = chr(240) . chr(159) . chr(144) . chr(152);
         return $this->render('user/index.html.twig', [
             'user' => $user,
             'donator' => $donator,
+            'testator' => $testator,
             'beneficiary' => $beneficiary,
             'tabBenef' => $tabBenef,
             'str' => $str,
@@ -63,6 +70,7 @@ class UserController extends AbstractController
     {
         $idUser = $this->getUser()->getId();  
         $donator = $BankRepo->findAccountUser($idUser);
+        //dd($donator);
         $tabBenef = $BankRepo->findBeneficiaries($idUser);
         $ibanUser = $donator[0]->getIban();
         $session = new Session();
@@ -85,6 +93,8 @@ class UserController extends AbstractController
         $idUser = $this->getUser()->getId();
         $accountUser = $repo->find($id);
         $oldAmountUser = $repo->find($id)->getAmount();
+        $ibanUser = $repo->find($id)->getIban();
+        //dd($ibanUser);
         $benef = $repo->findBeneficiaries($idUser);
         $nbBenef = count($benef);
         for($i=0; $i<$nbBenef; $i++) {
@@ -100,12 +110,11 @@ class UserController extends AbstractController
             $this->getDoctrine()->getManager()->flush();  
             $ibanDest = $transaction->desrinatary($form);
             $destAccount = $repo->findAccountIban($ibanDest);
-           
+            $ibanDest = $destAccount[0]->getIban();         
             $transactions = $transaction->creditDebit($form, $oldAmountUser, $destAccount);
-            $balanceUser = $transactions["balanceUser"]; 
-            
-            $balance = $transactions["balance"];
-            
+            $amount = $transactions["newAmount"];
+            $balanceUser = $transactions["balanceUser"];         
+            $balance = $transactions["balance"];    
             if($balanceUser <= 0) {
                 $this->addFlash(
                     'danger',
@@ -113,8 +122,14 @@ class UserController extends AbstractController
                 );
                 return $this->redirectToRoute('user_list');
             } else {
-                $destAccount[0]->setAmount($balance);
                 $entityManager = $this->getDoctrine()->getManager();
+                $history = new History();
+                $history->setAmount($amount)
+                        ->setDebitAccount($ibanUser)
+                        ->setCreditAccount($ibanDest)
+                        ->setEditAt(new \DateTime("now"));
+                $entityManager->persist($history);
+                $destAccount[0]->setAmount($balance);
                 $entityManager->persist($destAccount[0]);
                 $accountUser->setAmount($balanceUser);
                 $entityManager->persist($accountUser);
@@ -130,6 +145,37 @@ class UserController extends AbstractController
         return $this->render('user/transfert.html.twig', [
             'user' => $this->getUser(),
             'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * @Route("/movement", name="user_movement", methods={"GET","POST"})
+     * 
+     * @return Response
+     */
+    public function movement(HistoryRepository $repo, BankaccountRepository $bankRepo, UserRepository $userRepository)
+    {
+        $idUser = $this->getUser()->getId();
+        $iban = $bankRepo->findAccountUser($idUser)[0]->getIban();
+        $history = $repo->findBy(["debitAccount" => $iban]);
+        $nbHistory = count($history);
+        for($i=0; $i<$nbHistory; $i++) {
+            $debitAccounts[] = $history[$i]->getCreditAccount();
+        }
+        for($i=0; $i<$nbHistory; $i++) {
+            $creditUserBank[] = $bankRepo->findAccountIban($debitAccounts[$i]);
+        }
+        for($i=0; $i<$nbHistory; $i++) {
+            $idCreditUserBank[] = $creditUserBank[$i][0]->getUsers()->getId();
+        }
+        for($i=0; $i<$nbHistory; $i++) {
+            $users[] = $userRepository->find($idCreditUserBank[$i])->getEmail();
+        }
+        
+        return $this->render('user/movement.html.twig', [
+            'user' => $this->getUser(),
+            'history' => $history, 
+            'users' => $users,
         ]);
     }
 

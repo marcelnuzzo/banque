@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\History;
 use App\Repository\BankaccountRepository;
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -53,4 +54,5 @@ class AdminDashboardController extends AbstractController
             "usersNotAccount" => $usersNotAccount,
         ]);
     }
+
 }

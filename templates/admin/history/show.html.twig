@@ -1,0 +1,36 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Historique{% endblock %}
+
+{% block body %}
+    <h1>Historique</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ history.id }}</td>
+            </tr>
+            <tr>
+                <th>Compte débité</th>
+                <td>{{ history.debitAccount }}</td>
+            </tr>
+            <tr>
+                <th>Compte crédité</th>
+                <td>{{ history.creditAccount }}</td>
+            </tr>
+            <tr>
+                <th>Montant</th>
+                <td>{{ history.amount }}</td>
+            </tr>
+            <tr>
+                <th>Date</th>
+                <td>{{ history.editAt ? history.editAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a class="btn btn-info" href="{{ path('admin_history_index') }}">Retour à la liste</a>
+
+    {{ include('admin/history/_delete_form.html.twig') }}
+{% endblock %}

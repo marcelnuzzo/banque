@@ -112,6 +112,19 @@ class BankaccountRepository extends ServiceEntityRepository
     // /**
     //  * @return Bankaccount[] Returns an array of Bankaccount objects
     //  */
+    public function findIbanUsers($iban)
+    {
+        return $this->createQueryBuilder('b')
+            ->andWhere('b.iban = :val')
+            ->setParameter('val', $iban)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    // /**
+    //  * @return Bankaccount[] Returns an array of Bankaccount objects
+    //  */
     /*
     public function findByExampleField($value)
     {

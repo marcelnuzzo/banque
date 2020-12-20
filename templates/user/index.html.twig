@@ -44,6 +44,8 @@ p {
                     <a href="{{ path('account_password') }}" class="btn btn-primary">Modifier mon mot de passe</a>
                     {% if donator %}
                     <a href="{{ path('user_newBeneficiary') }}" class="btn btn-primary">Créer un bénéficiaire</a>
+                    <a href="{{ path('user_list') }}" class="btn btn-primary">Liste de vos comptes</a>
+                    <a href="{{ path('user_movement') }}" class="btn btn-primary">Vos dernières opérations</a>
                     {% endif %}
                 </div>
             </div>
@@ -110,8 +112,10 @@ p {
                     <b>Iban : </b><li>{{user.iban}}</li>
                     <b>Solde : </b><li>{{user.amount}} €</li>
                     <b>Titulaire : </b><li>{{user.users.fullname}}</li>
+                    <b>Donateur : </b><li>{{testator.fullname}}</li>
+                    <b>Mail du donateur : </b><li>{{testator.email}}</li>
                     <hr>
-                    {% endfor %}
+                    {% endfor %}             
                 </ul>
             </div>
             <div class="col-3"></div>

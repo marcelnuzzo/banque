@@ -35,6 +35,8 @@
 		<div class="container">
         {% if usersNotAccount %}
 		<h2>Clients en attente d'ouverture de compte</h2>
+		{% else %}
+		<h2>Pas de clients en attente d'ouverture de compte</h2>
         {% endif %}
 		<ul>
 			{% for user in usersNotAccount %}
